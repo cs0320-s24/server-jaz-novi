@@ -2,7 +2,6 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
-import edu.brown.cs.student.main.csv.ParseResult;
 import spark.Spark;
 
 public class Server {
@@ -16,10 +15,10 @@ public class Server {
           response.header("Access-Control-Allow-Origin", "*");
           response.header("Access-Control-Allow-Methods", "*");
         });
-    boolean isFileLoaded = false;
-    ParseResult parseResult = null;
+    CSVSharedVar csvSharedVar = new CSVSharedVar();
     // Setting up the handler for the GET /order and /activity endpoints
-    Spark.get("loadcsv", new LoadCSVHandler(isFileLoaded, parseResult));
+    Spark.get("loadcsv", new LoadCSVHandler(csvSharedVar));
+    Spark.get("viewcsv", new ViewCSVHandler(csvSharedVar));
     Spark.init();
     Spark.awaitInitialization();
 
