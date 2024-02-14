@@ -7,7 +7,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class utility {
-  private static final String ACCESS_DIRECTORY = "./data";
+  private static final String ACCESS_DIRECTORY = "/data";
 
   public static boolean isValidPath(String requestedPath) {
     try {
