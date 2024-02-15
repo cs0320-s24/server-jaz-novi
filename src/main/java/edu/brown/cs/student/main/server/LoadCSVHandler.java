@@ -28,6 +28,7 @@ public class LoadCSVHandler implements Route {
     if (filepath == null) {
       return new FileInvalidResponse("No filepath provided").serialize();
     }
+    CSVSharedVar.setFilePath(filepath);
     // should I make the header flag a must? ->optional, but return an error if search with header
     String headerFlag = request.queryParams("headerFlag");
     if (headerFlag == null) {

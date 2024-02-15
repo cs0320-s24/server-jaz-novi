@@ -3,8 +3,11 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
-import edu.brown.cs.student.main.csv.ParseResult;
+import edu.brown.cs.student.main.creators.StringCreatorFromRow;
+import edu.brown.cs.student.main.csv.CSVSearcher;
+import edu.brown.cs.student.main.server.LoadCSVHandler.FileInvalidResponse;
 import edu.brown.cs.student.main.server.ViewCSVHandler.ParseSuccessResponse.InvalidOperationResponse;
+import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +16,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ViewCSVHandler implements Route {
+public class SearchCSVHandler implements Route {
 
   private final CSVSharedVar CSVSharedVar;
 
-  public ViewCSVHandler(CSVSharedVar sharedVar) {
+  public SearchCSVHandler(CSVSharedVar sharedVar) {
     this.CSVSharedVar = sharedVar;
   }
 
@@ -26,10 +29,32 @@ public class ViewCSVHandler implements Route {
     if (!CSVSharedVar.isFileLoaded()) {
       return new InvalidOperationResponse("No file loaded").serialize();
     }
+    String searchVal = request.queryParams("val");
+    String colIdentifier = request.queryParams("col");
+    String multiflag = request.queryParams("multi");
+    if (searchVal == null) {
+      return new FileInvalidResponse("No search target provided").serialize();
+    }
+    if (multiflag == null) {
+      multiflag = "false";
+    }else if(!multiflag.equals("true")&&!multiflag.equals("false")){
+      return new FileInvalidResponse("multi flag should be true or false").serialize();
+    }
     try {
+      CSVSearcher searcher =
+          new CSVSearcher(
+              new FileReader(CSVSharedVar.getFilePath()),
+              new StringCreatorFromRow() {},
+              CSVSharedVar.getHeaderFlag());
+      List<String> searchResult;
+      if (Boolean.parseBoolean(multiflag)) {
+        searchResult = searcher.searchMulti(searchVal);
+      } else {
+        searchResult = searcher.search(searchVal, colIdentifier);
+      }
       Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("result", "success");
-      responseMap.put("content", CSVSharedVar.getParseResult());
+      responseMap.put("content", searchResult);
       return new ParseSuccessResponse(responseMap).serialize();
     } catch (Exception e) {
       return new InvalidOperationResponse("Error happens when loading content", e.toString())
@@ -42,7 +67,6 @@ public class ViewCSVHandler implements Route {
     public ParseSuccessResponse(Map<String, Object> responseMap) {
       this("success", responseMap);
     }
-
     /**
      * @return this response, serialized as Json
      */
@@ -50,31 +74,18 @@ public class ViewCSVHandler implements Route {
       try {
         Moshi moshi = new Moshi.Builder().build();
 
-        // Assuming ParseResult's data is a List<MyDataObject>, replace MyDataObject with your
-        // actual data type
-        Type dataListType = Types.newParameterizedType(List.class, String.class);
-        JsonAdapter<List<String>> dataAdapter = moshi.adapter(dataListType);
+        // No need to specify a type for headers since they're a String
+        JsonAdapter<String> stringAdapter = moshi.adapter(String.class);
+
+        // Type for the list of strings
+        Type stringListType = Types.newParameterizedType(List.class, String.class);
+        JsonAdapter<List<String>> listStringAdapter = moshi.adapter(stringListType);
 
         // Retrieve the ParseResult from the responseMap
-        ParseResult<String> parseResult = (ParseResult<String>) responseMap.get("content");
-        String headersJson;
-        // Serialize the headers and data separately
-        if (parseResult.getHeaders() != null) {
-          headersJson = moshi.adapter(String.class).toJson(parseResult.getHeaders());
-        } else {
-          headersJson = moshi.adapter(String.class).toJson("No headers");
-        }
-
-        String dataJson = dataAdapter.toJson(parseResult.getData());
-
-        // Combine headers and data into one JSON string
-        return "{\"response_type\": \""
-            + response_type
-            + "\", \"headers\": "
-            + headersJson
-            + ", \"data\": "
-            + dataJson
-            + "}";
+        List<String> searchResult = (List<String>) responseMap.get("content");
+        // Serialize the data list
+        String dataJson = listStringAdapter.toJson(searchResult);
+        return "{\"response_type\": \"" + response_type + ", \"data\": " + dataJson + "}";
       } catch (Exception e) {
         e.printStackTrace();
         throw new RuntimeException("Error serializing ParseSuccessResponse", e);

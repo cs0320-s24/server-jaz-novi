@@ -6,6 +6,7 @@ public class CSVSharedVar {
   private boolean isFileLoaded = false;
   private ParseResult parseResult = null;
   private boolean headerFlag = false;
+  private String fileName = null;
   // getter and setter methods
   public boolean isFileLoaded() {
     return isFileLoaded;
@@ -29,5 +30,13 @@ public class CSVSharedVar {
 
   public void setHeaderFlag(boolean headerFlag) {
     this.headerFlag = headerFlag;
+  }
+
+  public String getFilePath() {
+    return fileName;
+  }
+
+  public void setFilePath(String fileName) {
+    this.fileName = fileName;
   }
 }

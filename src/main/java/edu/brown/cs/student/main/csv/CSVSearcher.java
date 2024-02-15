@@ -7,6 +7,7 @@ import edu.brown.cs.student.main.query.Query;
 import edu.brown.cs.student.main.query.QueryParser;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CSVSearcher {
@@ -31,14 +32,15 @@ public class CSVSearcher {
     }
   }
 
-  public void search(String targetVal, String targetCol) {
+  public List<String> search(String targetVal, String targetCol) {
     boolean valFound = false;
     String unifiedTargetVal = utility.unifyString(targetVal);
+    List<String> searchResults = new ArrayList<>();
     int colIndex = 0;
     if (targetCol != null) {
       colIndex = utility.findColIndex(targetCol, this.headerFlag, this.headers);
       if (colIndex == -1) {
-        return;
+        return null;
       }
       // search for the target value in the targeted column
       for (String row : parsedData) {
@@ -46,6 +48,7 @@ public class CSVSearcher {
         if (curCol.contains(unifiedTargetVal)) {
           valFound = true;
           System.out.println(row);
+          searchResults.add(row);
         }
       }
     } else {
@@ -55,6 +58,7 @@ public class CSVSearcher {
         if (curRow.contains(unifiedTargetVal)) {
           valFound = true;
           System.out.println(row);
+          searchResults.add(row);
         }
       }
     }
@@ -62,23 +66,26 @@ public class CSVSearcher {
       System.err.println(
           "The requested value does not exist in the csv file or in the requested column.");
     }
-    return;
+    return searchResults;
   }
 
-  public void searchMulti(String queries) {
+  public List<String> searchMulti(String queries) {
     boolean valFound = false;
     Query query = QueryParser.parse(queries, this.headers, this.headerFlag);
-
+    // create an array to hold the search results
+    List<String> searchResults = new ArrayList<>();
     for (String row : parsedData) {
       String[] rowArray = row.split(",");
       if (query.contains(rowArray)) {
         valFound = true;
         System.out.println(row);
+        searchResults.add(row);
       }
     }
     if (!valFound) {
       System.err.println(
           "The requested value does not exist in the csv file or in the requested column.");
     }
+    return searchResults;
   }
 }

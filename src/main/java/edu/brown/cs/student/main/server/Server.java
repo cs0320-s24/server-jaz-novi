@@ -19,6 +19,7 @@ public class Server {
     // Setting up the handler for the GET /order and /activity endpoints
     Spark.get("loadcsv", new LoadCSVHandler(csvSharedVar));
     Spark.get("viewcsv", new ViewCSVHandler(csvSharedVar));
+    Spark.get("searchcsv", new SearchCSVHandler(csvSharedVar));
     Spark.init();
     Spark.awaitInitialization();
 
