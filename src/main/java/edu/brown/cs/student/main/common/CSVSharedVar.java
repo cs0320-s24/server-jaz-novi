@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main.server;
+package edu.brown.cs.student.main.common;
 
 import edu.brown.cs.student.main.csv.ParseResult;
 

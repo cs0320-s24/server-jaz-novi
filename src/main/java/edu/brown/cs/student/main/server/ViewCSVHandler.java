@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.csv.ParseResult;
 import edu.brown.cs.student.main.server.ViewCSVHandler.ParseSuccessResponse.InvalidOperationResponse;
 import java.lang.reflect.Type;
@@ -15,7 +16,7 @@ import spark.Route;
 
 public class ViewCSVHandler implements Route {
 
-  private final CSVSharedVar CSVSharedVar;
+  private final edu.brown.cs.student.main.common.CSVSharedVar CSVSharedVar;
 
   public ViewCSVHandler(CSVSharedVar sharedVar) {
     this.CSVSharedVar = sharedVar;

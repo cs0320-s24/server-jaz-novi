@@ -2,11 +2,18 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
+import edu.brown.cs.student.main.common.CSVSharedVar;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
 import spark.Spark;
 
 public class Server {
   // requested api key:43ae22b3d5ae6792522631efdb1e455ad5893817
-  public static void main(String[] args) {
+  // to do: print out the operation guide, parameter variable names for different routes.
+
+  public static void main(String[] args)
+      throws URISyntaxException, IOException, InterruptedException {
     int port = 3232;
     Spark.port(port);
 
@@ -16,6 +23,7 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
     CSVSharedVar csvSharedVar = new CSVSharedVar();
+    Map<String, String> StatesCode = GetStateCodes.getStatesCodes();
     // Setting up the handler for the GET /order and /activity endpoints
     Spark.get("loadcsv", new LoadCSVHandler(csvSharedVar));
     Spark.get("viewcsv", new ViewCSVHandler(csvSharedVar));

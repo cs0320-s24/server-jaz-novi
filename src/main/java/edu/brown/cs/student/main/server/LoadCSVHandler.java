@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.server;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.FactoryFailureException;
 import edu.brown.cs.student.main.common.utility;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
@@ -15,7 +16,7 @@ import spark.Response;
 import spark.Route;
 
 public class LoadCSVHandler implements Route {
-  private CSVSharedVar CSVSharedVar;
+  private edu.brown.cs.student.main.common.CSVSharedVar CSVSharedVar;
 
   public LoadCSVHandler(CSVSharedVar sharedVar) {
     this.CSVSharedVar = sharedVar;

@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
 import edu.brown.cs.student.main.csv.CSVSearcher;
 import edu.brown.cs.student.main.server.LoadCSVHandler.FileInvalidResponse;
@@ -18,7 +19,7 @@ import spark.Route;
 
 public class SearchCSVHandler implements Route {
 
-  private final CSVSharedVar CSVSharedVar;
+  private final edu.brown.cs.student.main.common.CSVSharedVar CSVSharedVar;
 
   public SearchCSVHandler(CSVSharedVar sharedVar) {
     this.CSVSharedVar = sharedVar;
@@ -37,7 +38,7 @@ public class SearchCSVHandler implements Route {
     }
     if (multiflag == null) {
       multiflag = "false";
-    }else if(!multiflag.equals("true")&&!multiflag.equals("false")){
+    } else if (!multiflag.equals("true") && !multiflag.equals("false")) {
       return new FileInvalidResponse("multi flag should be true or false").serialize();
     }
     try {
