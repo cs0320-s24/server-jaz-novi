@@ -6,7 +6,6 @@ import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.GetStateCodes;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 import spark.Spark;
 
 public class Server {
@@ -24,12 +23,11 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
     CSVSharedVar csvSharedVar = new CSVSharedVar();
-    Map<String, String> StatesCode = GetStateCodes.getStatesCodes();
     // Setting up the handler for the GET /order and /activity endpoints
     Spark.get("loadcsv", new LoadCSVHandler(csvSharedVar));
     Spark.get("viewcsv", new ViewCSVHandler(csvSharedVar));
     Spark.get("searchcsv", new SearchCSVHandler(csvSharedVar));
-    Spark.get("broadband", new BroadbandHandler());
+    //    Spark.get("broadband", new BroadbandHandler());
     Spark.init();
     Spark.awaitInitialization();
 
