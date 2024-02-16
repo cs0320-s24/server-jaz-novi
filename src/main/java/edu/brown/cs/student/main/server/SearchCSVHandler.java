@@ -1,13 +1,8 @@
 package edu.brown.cs.student.main.server;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.ServerAPI;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
 import edu.brown.cs.student.main.csv.CSVSearcher;
-import edu.brown.cs.student.main.server.ViewCSVHandler.ParseSuccessResponse.InvalidOperationResponse;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -27,20 +22,26 @@ public class SearchCSVHandler implements Route {
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
+    Map<String, Object> responseMap = new HashMap<>();
     if (!CSVSharedVar.isFileLoaded()) {
-      return new InvalidOperationResponse("No file loaded").serialize();
+      responseMap.put("result", "error_bad_request");
+      responseMap.put("message", "No file loaded");
+      return ServerAPI.serializeResponse(responseMap);
     }
     String searchVal = request.queryParams("val");
     String colIdentifier = request.queryParams("col");
     String multiflag = request.queryParams("multi");
     if (searchVal == null) {
-      return ServerAPI.GetServerErrorResponse("error_bad_request", "No search target provided");
+      responseMap.put("result", "error_bad_request");
+      responseMap.put("message", "No search value provided");
+      return ServerAPI.serializeResponse(responseMap);
     }
     if (multiflag == null) {
       multiflag = "false";
     } else if (!multiflag.equals("true") && !multiflag.equals("false")) {
-      return ServerAPI.GetServerErrorResponse(
-          "error_bad_request", "multi flag should be true or false");
+      responseMap.put("result", "error_bad_request");
+      responseMap.put("message", "multi flag should be true or false");
+      return ServerAPI.serializeResponse(responseMap);
     }
     try {
       CSVSearcher searcher =
@@ -54,44 +55,14 @@ public class SearchCSVHandler implements Route {
       } else {
         searchResult = searcher.search(searchVal, colIdentifier);
       }
-      Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("result", "success");
       responseMap.put("data", searchResult);
-      return new ParseSuccessResponse(responseMap).serialize();
+      return ServerAPI.serializeResponse(responseMap);
     } catch (Exception e) {
-      return ServerAPI.GetServerErrorResponse(
-          "error_datasource", "Error happens when searching" + e.toString());
-    }
-  }
-
-  public record ParseSuccessResponse(String response_type, Map<String, Object> responseMap) {
-
-    public ParseSuccessResponse(Map<String, Object> responseMap) {
-      this("success", responseMap);
-    }
-    /**
-     * @return this response, serialized as Json
-     */
-    String serialize() {
-      try {
-        Moshi moshi = new Moshi.Builder().build();
-
-        // No need to specify a type for headers since they're a String
-        JsonAdapter<String> stringAdapter = moshi.adapter(String.class);
-
-        // Type for the list of strings
-        Type stringListType = Types.newParameterizedType(List.class, String.class);
-        JsonAdapter<List<String>> listStringAdapter = moshi.adapter(stringListType);
-
-        // Retrieve the ParseResult from the responseMap
-        List<String> searchResult = (List<String>) responseMap.get("data");
-        // Serialize the data list
-        String dataJson = listStringAdapter.toJson(searchResult);
-        return "{\"response_type\": \"" + response_type + ", \"data\": " + dataJson + "}";
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new RuntimeException("Error serializing ParseSuccessResponse", e);
-      }
+      e.printStackTrace();
+      responseMap.put("result", "error_datasource");
+      responseMap.put("message", "Error happens when searching" + e.toString());
+      return ServerAPI.serializeResponse(responseMap);
     }
   }
 }
