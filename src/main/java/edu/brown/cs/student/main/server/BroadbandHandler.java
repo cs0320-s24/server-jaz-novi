@@ -1,45 +1,24 @@
- package edu.brown.cs.student.main.server;
+package edu.brown.cs.student.main.server;
 
- import com.squareup.moshi.JsonAdapter;
- import com.squareup.moshi.Moshi;
- import com.squareup.moshi.Types;
- import edu.brown.cs.student.main.caches.ACSQuery;
- import edu.brown.cs.student.main.caches.ACSSearcher;
- import edu.brown.cs.student.main.caches.CachedACSInfo;
- import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.Collection;
- import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
- import spark.Request;
- import spark.Response;
- import spark.Route;
- import edu.brown.cs.student.main.common.ServerAPI;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
+import edu.brown.cs.student.main.caches.ACSQuery;
+import edu.brown.cs.student.main.caches.ACSSearcher;
+import edu.brown.cs.student.main.caches.CachedACSInfo;
 import edu.brown.cs.student.main.common.GetCountyCodes;
 import edu.brown.cs.student.main.common.GetStateCodes;
-import edu.brown.cs.student.main.server.LoadCSVHandler.FileInvalidResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
+import edu.brown.cs.student.main.common.ServerAPI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import java.util.Collection;
 
- public class BroadbandHandler implements Route {
+public class BroadbandHandler implements Route {
   private static Map<String, String> stateCodes = null;
   private static ACSSearcher acsSearcher;
   private static CachedACSInfo cachedACSInfo;
@@ -137,7 +116,8 @@ import java.util.Collection;
   //   for (String variable : variableNames) {
   //     String uri =
   //         String.format(
-  //             "https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,%s&for=county:%s&in=state:%s",
+  //
+  // "https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,%s&for=county:%s&in=state:%s",
   //             variable, countyCode, stateCode);
 
   //     HttpRequest request = HttpRequest.newBuilder().uri(new URI(uri)).GET().build();
@@ -146,7 +126,8 @@ import java.util.Collection;
 
   //     if (response.statusCode() != 200) {
   //         responseData.put("result", "error_datasource");
-  //         responseData.put("error_message", "Failed to retrieve data from the ACS API for the given location.");
+  //         responseData.put("error_message", "Failed to retrieve data from the ACS API for the
+  // given location.");
   //     }
 
   //     if (response.statusCode() == 200) {

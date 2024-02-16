@@ -50,9 +50,10 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
           HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
 
       if (response.statusCode() != 200) {
-          responseData.put("result", "error_datasource");
-          responseData.put("error_message", "Failed to retrieve data from the ACS API for the given location.");
-          notFoundVariables.add(variable);
+        responseData.put("result", "error_datasource");
+        responseData.put(
+            "error_message", "Failed to retrieve data from the ACS API for the given location.");
+        notFoundVariables.add(variable);
       }
       List<List<String>> responseDataList = jsonAdapter.fromJson(response.body());
       if (responseDataList != null && responseDataList.size() > 1) {

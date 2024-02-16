@@ -1,16 +1,11 @@
 package edu.brown.cs.student.main.common;
 
 import com.squareup.moshi.JsonAdapter;
-import java.util.Map;
-
-import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import java.util.Map;
 
 public class ServerAPI {
-  public static String serializeResponse(Map<String, Object> responseData) {
-    try {
 
   public static String serializeResponse(Map<String, Object> responseData) {
     try {
