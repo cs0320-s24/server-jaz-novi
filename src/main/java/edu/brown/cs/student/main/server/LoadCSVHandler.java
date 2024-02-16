@@ -4,6 +4,7 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.FactoryFailureException;
+import edu.brown.cs.student.main.common.ServerAPI;
 import edu.brown.cs.student.main.common.utility;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
 import edu.brown.cs.student.main.csv.CSVParser;
@@ -27,7 +28,7 @@ public class LoadCSVHandler implements Route {
 
     String filepath = request.queryParams("filepath");
     if (filepath == null) {
-      return new FileInvalidResponse("No filepath provided").serialize();
+      return ServerAPI.GetServerErrorResponse("error_bad_request", "No filepath provided");
     }
     CSVSharedVar.setFilePath(filepath);
     // should I make the header flag a must? ->optional, but return an error if search with header
@@ -41,7 +42,7 @@ public class LoadCSVHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
     // check if the file path is valid
     if (!utility.isValidPath(filepath)) {
-      return new FileInvalidResponse("Invalid filepath").serialize();
+      return ServerAPI.GetServerErrorResponse("error_datasource", "Invalid filepath");
     }
     // create a csv parser and parse the file
     try {
@@ -55,7 +56,8 @@ public class LoadCSVHandler implements Route {
       responseMap.put("result", "success");
       return new ParseSuccessResponse(responseMap).serialize();
     } catch (IOException | FactoryFailureException e) {
-      return new FileInvalidResponse("Error happens when parsing", e.toString()).serialize();
+      return ServerAPI.GetServerErrorResponse(
+          "error_datasource", "Error happens when parsing" + e.toString());
     }
   }
 
@@ -66,7 +68,7 @@ public class LoadCSVHandler implements Route {
     /**
      * @return this response, serialized as Json
      */
-    String serialize() {
+    public String serialize() {
       try {
         // Initialize Moshi which takes in this class and returns it as JSON!
         Moshi moshi = new Moshi.Builder().build();
@@ -76,18 +78,6 @@ public class LoadCSVHandler implements Route {
         e.printStackTrace();
         throw e;
       }
-    }
-  }
-
-  /** Response object to send if provided filepath is null or invalid */
-  public record FileInvalidResponse(String response_type, String message) {
-    public FileInvalidResponse(String message) {
-      this("error", message);
-    }
-
-    String serialize() {
-      Moshi moshi = new Moshi.Builder().build();
-      return moshi.adapter(FileInvalidResponse.class).toJson(this);
     }
   }
 }

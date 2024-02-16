@@ -4,6 +4,7 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.common.CSVSharedVar;
+import edu.brown.cs.student.main.common.ServerAPI;
 import edu.brown.cs.student.main.csv.ParseResult;
 import edu.brown.cs.student.main.server.ViewCSVHandler.ParseSuccessResponse.InvalidOperationResponse;
 import java.lang.reflect.Type;
@@ -25,7 +26,7 @@ public class ViewCSVHandler implements Route {
   @Override
   public Object handle(Request request, Response response) throws Exception {
     if (!CSVSharedVar.isFileLoaded()) {
-      return new InvalidOperationResponse("No file loaded").serialize();
+      return ServerAPI.GetServerErrorResponse("error_bad_request", "No file loaded");
     }
     try {
       Map<String, Object> responseMap = new HashMap<>();
@@ -33,8 +34,8 @@ public class ViewCSVHandler implements Route {
       responseMap.put("content", CSVSharedVar.getParseResult());
       return new ParseSuccessResponse(responseMap).serialize();
     } catch (Exception e) {
-      return new InvalidOperationResponse("Error happens when loading content", e.toString())
-          .serialize();
+      return ServerAPI.GetServerErrorResponse(
+          "error_datasource", "Error happens when parsing" + e.toString());
     }
   }
 

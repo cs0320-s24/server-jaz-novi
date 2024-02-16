@@ -4,9 +4,9 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import edu.brown.cs.student.main.common.CSVSharedVar;
+import edu.brown.cs.student.main.common.ServerAPI;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
 import edu.brown.cs.student.main.csv.CSVSearcher;
-import edu.brown.cs.student.main.server.LoadCSVHandler.FileInvalidResponse;
 import edu.brown.cs.student.main.server.ViewCSVHandler.ParseSuccessResponse.InvalidOperationResponse;
 import java.io.FileReader;
 import java.lang.reflect.Type;
@@ -34,12 +34,13 @@ public class SearchCSVHandler implements Route {
     String colIdentifier = request.queryParams("col");
     String multiflag = request.queryParams("multi");
     if (searchVal == null) {
-      return new FileInvalidResponse("No search target provided").serialize();
+      return ServerAPI.GetServerErrorResponse("error_bad_request", "No search target provided");
     }
     if (multiflag == null) {
       multiflag = "false";
     } else if (!multiflag.equals("true") && !multiflag.equals("false")) {
-      return new FileInvalidResponse("multi flag should be true or false").serialize();
+      return ServerAPI.GetServerErrorResponse(
+          "error_bad_request", "multi flag should be true or false");
     }
     try {
       CSVSearcher searcher =
@@ -55,11 +56,11 @@ public class SearchCSVHandler implements Route {
       }
       Map<String, Object> responseMap = new HashMap<>();
       responseMap.put("result", "success");
-      responseMap.put("content", searchResult);
+      responseMap.put("data", searchResult);
       return new ParseSuccessResponse(responseMap).serialize();
     } catch (Exception e) {
-      return new InvalidOperationResponse("Error happens when loading content", e.toString())
-          .serialize();
+      return ServerAPI.GetServerErrorResponse(
+          "error_datasource", "Error happens when searching" + e.toString());
     }
   }
 
@@ -83,26 +84,13 @@ public class SearchCSVHandler implements Route {
         JsonAdapter<List<String>> listStringAdapter = moshi.adapter(stringListType);
 
         // Retrieve the ParseResult from the responseMap
-        List<String> searchResult = (List<String>) responseMap.get("content");
+        List<String> searchResult = (List<String>) responseMap.get("data");
         // Serialize the data list
         String dataJson = listStringAdapter.toJson(searchResult);
         return "{\"response_type\": \"" + response_type + ", \"data\": " + dataJson + "}";
       } catch (Exception e) {
         e.printStackTrace();
         throw new RuntimeException("Error serializing ParseSuccessResponse", e);
-      }
-    }
-
-    /** Response object to send if provided filepath is null or invalid */
-    public record InvalidOperationResponse(String response_type, String message) {
-
-      public InvalidOperationResponse(String message) {
-        this("error", message);
-      }
-
-      String serialize() {
-        Moshi moshi = new Moshi.Builder().build();
-        return moshi.adapter(InvalidOperationResponse.class).toJson(this);
       }
     }
   }
