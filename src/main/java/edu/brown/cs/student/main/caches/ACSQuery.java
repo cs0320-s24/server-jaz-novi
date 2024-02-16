@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class ACSQuery {
   private final String stateCode;
-  private final  String stateName;
-  private final  String countyCode;
-  private final  String countyName;
-  private final  List<String> variableNames;
+  private final String stateName;
+  private final String countyCode;
+  private final String countyName;
+  private final List<String> variableNames;
 
   public ACSQuery(
       String stateCode,
@@ -22,21 +22,27 @@ public class ACSQuery {
     this.countyName = countyName;
     this.variableNames = variableNames;
   }
+
   public String getStateCode() {
     return stateCode;
   }
+
   public String getStateName() {
-  return stateName;
+    return stateName;
   }
+
   public String getCountyCode() {
-  return countyCode;
+    return countyCode;
   }
+
   public String getCountyName() {
-  return countyName;
+    return countyName;
   }
+
   public List<String> getVariableNames() {
-  return variableNames;
+    return variableNames;
   }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
