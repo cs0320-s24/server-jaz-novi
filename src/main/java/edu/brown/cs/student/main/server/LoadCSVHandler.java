@@ -1,7 +1,5 @@
 package edu.brown.cs.student.main.server;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.FactoryFailureException;
 import edu.brown.cs.student.main.common.ServerAPI;
@@ -28,7 +26,7 @@ public class LoadCSVHandler implements Route {
     Map<String, Object> responseMap = new HashMap<>();
     String filepath = request.queryParams("filepath");
     if (filepath == null) {
-//      return ServerAPI.GetServerErrorResponse("error_bad_request", "No filepath provided");
+      //      return ServerAPI.GetServerErrorResponse("error_bad_request", "No filepath provided");
       responseMap.put("result", "error_bad_request");
       responseMap.put("message", "No filepath provided");
       return ServerAPI.serializeResponse(responseMap);
@@ -48,7 +46,7 @@ public class LoadCSVHandler implements Route {
       responseMap.put("result", "error_bad_request");
       responseMap.put("message", "Invalid filepath");
       return ServerAPI.serializeResponse(responseMap);
-//      return ServerAPI.GetServerErrorResponse("error_datasource", "Invalid filepath");
+      //      return ServerAPI.GetServerErrorResponse("error_datasource", "Invalid filepath");
     }
     // create a csv parser and parse the file
     try {
@@ -67,24 +65,4 @@ public class LoadCSVHandler implements Route {
       return ServerAPI.serializeResponse(responseMap);
     }
   }
-
-//  public record ParseSuccessResponse(String response_type, Map<String, Object> responseMap) {
-//    public ParseSuccessResponse(Map<String, Object> responseMap) {
-//      this("success", responseMap);
-//    }
-//    /**
-//     * @return this response, serialized as Json
-//     */
-//    public String serialize() {
-//      try {
-//        // Initialize Moshi which takes in this class and returns it as JSON!
-//        Moshi moshi = new Moshi.Builder().build();
-//        JsonAdapter<ParseSuccessResponse> adapter = moshi.adapter(ParseSuccessResponse.class);
-//        return adapter.toJson(this);
-//      } catch (Exception e) {
-//        e.printStackTrace();
-//        throw e;
-//      }
-//    }
-//  }
 }

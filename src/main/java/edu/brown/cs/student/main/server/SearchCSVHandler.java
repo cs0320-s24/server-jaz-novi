@@ -1,10 +1,10 @@
 package edu.brown.cs.student.main.server;
+
 import edu.brown.cs.student.main.common.CSVSharedVar;
 import edu.brown.cs.student.main.common.ServerAPI;
 import edu.brown.cs.student.main.creators.StringCreatorFromRow;
 import edu.brown.cs.student.main.csv.CSVSearcher;
 import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +31,7 @@ public class SearchCSVHandler implements Route {
     String searchVal = request.queryParams("val");
     String colIdentifier = request.queryParams("col");
     String multiflag = request.queryParams("multi");
-    if (searchVal == null) {
-      responseMap.put("result", "error_bad_request");
-      responseMap.put("message", "No search value provided");
-      return ServerAPI.serializeResponse(responseMap);
-    }
+    String queries = request.queryParams("queries");
     if (multiflag == null) {
       multiflag = "false";
     } else if (!multiflag.equals("true") && !multiflag.equals("false")) {
@@ -43,6 +39,20 @@ public class SearchCSVHandler implements Route {
       responseMap.put("message", "multi flag should be true or false");
       return ServerAPI.serializeResponse(responseMap);
     }
+    if (multiflag.equals("true")) {
+      if (queries == null) {
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("message", "No queries provided");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+    } else {
+      if (searchVal == null) {
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("message", "No search value provided");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+    }
+
     try {
       CSVSearcher searcher =
           new CSVSearcher(

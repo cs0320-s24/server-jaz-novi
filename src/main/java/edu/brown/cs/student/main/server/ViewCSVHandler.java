@@ -26,15 +26,16 @@ public class ViewCSVHandler implements Route {
     }
     try {
       responseMap.put("result", "success");
-      responseMap.put("data", CSVSharedVar.getParseResult());
+      if (CSVSharedVar.getHeaderFlag() != false) {
+        responseMap.put("header", CSVSharedVar.getParseResult().getHeaders());
+      }
+      responseMap.put("data", CSVSharedVar.getParseResult().getData());
       return ServerAPI.serializeResponse(responseMap);
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("result", "error_datasource");
       responseMap.put("message", "Error happens when parsing" + e.toString());
       return ServerAPI.serializeResponse(responseMap);
-
     }
   }
-
 }

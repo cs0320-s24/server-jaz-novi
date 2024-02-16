@@ -73,14 +73,14 @@ public class TestCSVHandlers {
     return clientConnection;
   }
 
-//  @Test
-//  public void testNoFilepathProvided() throws Exception {
-//    HttpURLConnection clientConnection1 = tryRequest("loadcsv?headerFlag=true");
-//    String jsonResponse = new Buffer().readFrom(clientConnection1.getInputStream()).readUtf8();
-//    Map<String, Object> response = adapter.fromJson(jsonResponse);
-//    assertEquals("error_bad_request", response.get("result"));
-//    assertEquals("No filepath provided", response.get("message"));
-//  }
+  @Test
+  public void testNoFilepathProvided() throws Exception {
+    HttpURLConnection clientConnection1 = tryRequest("loadcsv?headerFlag=true");
+    String jsonResponse = new Buffer().readFrom(clientConnection1.getInputStream()).readUtf8();
+    Map<String, Object> response = adapter.fromJson(jsonResponse);
+    assertEquals("error_bad_request", response.get("result"));
+    assertEquals("No filepath provided", response.get("message"));
+  }
 
   @Test
   public void testLoadSuccessfully() throws Exception {
@@ -93,15 +93,15 @@ public class TestCSVHandlers {
     assertEquals("success", response.get("result"));
   }
 
-    @Test
-    public void testNotLoadViewCSV() throws IOException {
-      HttpURLConnection clientViewConnection = tryRequest("viewcsv");
-      Buffer buffer = new Buffer();
-      buffer.readFrom(clientViewConnection.getInputStream());
-      Map<String, Object> response = adapter.fromJson(buffer);
-      assertEquals("error_bad_request", response.get("result"), "No file loaded");
-      clientViewConnection.disconnect();
-    }
+  @Test
+  public void testNotLoadViewCSV() throws IOException {
+    HttpURLConnection clientViewConnection = tryRequest("viewcsv");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientViewConnection.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertEquals("error_bad_request", response.get("result"), "No file loaded");
+    clientViewConnection.disconnect();
+  }
 
   @Test
   public void testSuccessfulViewCSVFilepathProvided() throws IOException {
@@ -113,45 +113,73 @@ public class TestCSVHandlers {
     buffer.readFrom(clientViewConnection.getInputStream());
     Map<String, Object> response = adapter.fromJson(buffer);
     System.out.println(response);
-//    assertNotNull(response.get("data"), "The response data should not be null.");
-//    assertEquals("success", response.get("result"), "The operation should be successful.");
+    assertNotNull(response.get("data"), "The response data should not be null.");
+    assertEquals("success", response.get("result"), "The operation should be successful.");
   }
 
-    @Test
-    public void testNotLoadSearchCSV() throws IOException {
-      HttpURLConnection clientViewConnection = tryRequest("searchcsv");
-      Buffer buffer = new Buffer();
-      buffer.readFrom(clientViewConnection.getInputStream());
-      Map<String, Object> response = adapter.fromJson(buffer);
-      assertEquals("error_bad_request", response.get("result"), "No file loaded");
-      clientViewConnection.disconnect();
-    }
+  @Test
+  public void testNotLoadSearchCSV() throws IOException {
+    HttpURLConnection clientViewConnection = tryRequest("searchcsv");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientViewConnection.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertEquals("error_bad_request", response.get("result"), "No file loaded");
+    clientViewConnection.disconnect();
+  }
 
-    @Test
-    public void testSearchCSVWithInvalidInput() throws Exception {
-      HttpURLConnection clientConnection =
-          tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
-      assertEquals(200, clientConnection.getResponseCode());
-      HttpURLConnection clientConnectionSearch1 =
-          tryRequest("searchcsv?column=city&value=Providence");
-      Buffer buffer = new Buffer();
-      buffer.readFrom(clientConnectionSearch1.getInputStream());
-      Map<String, Object> response = adapter.fromJson(buffer);
-      assertEquals("error_bad_request", response.get("result"));
-      assertEquals("No search value provided", response.get("message"));
-    }
+  @Test
+  public void testSearchCSVWithInvalidInput() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+    assertEquals(200, clientConnection.getResponseCode());
+    HttpURLConnection clientConnectionSearch1 =
+        tryRequest("searchcsv?column=city&value=Providence");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientConnectionSearch1.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertEquals("error_bad_request", response.get("result"));
+    assertEquals("No search value provided", response.get("message"));
+  }
 
-    @Test
-    public void testSearchCSVWithValidInput() throws Exception {
-      HttpURLConnection clientConnection =
-          tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
-      assertEquals(200, clientConnection.getResponseCode());
-      HttpURLConnection clientConnectionSearch1 =
-          tryRequest("searchcsv?col=City/Town&val=Providence");
-      Buffer buffer = new Buffer();
-      buffer.readFrom(clientConnectionSearch1.getInputStream());
-      Map<String, Object> response = adapter.fromJson(buffer);
-      assertNotNull(response.get("data"), "The response data should not be null.");
-      assertEquals("success", response.get("result"), "The operation should be successful.");
-    }
+  @Test
+  public void testSearchCSVWithValidInput() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+    assertEquals(200, clientConnection.getResponseCode());
+    HttpURLConnection clientConnectionSearch1 =
+        tryRequest("searchcsv?col=City/Town&val=Providence");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientConnectionSearch1.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertNotNull(response.get("data"), "The response data should not be null.");
+    assertEquals("success", response.get("result"), "The operation should be successful.");
+  }
+
+  @Test
+  public void testSearchCSVWithInvalidMultiFlag() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+    assertEquals(200, clientConnection.getResponseCode());
+    HttpURLConnection clientConnectionSearch1 =
+        tryRequest("searchcsv?col=City/Town&val=Providence&multi=invalid");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientConnectionSearch1.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertEquals("error_bad_request", response.get("result"));
+    assertEquals("multi flag should be true or false", response.get("message"));
+  }
+  //  @Test
+  //  public void testSearchCSVWithValidMultiFlag() throws Exception {
+  //    HttpURLConnection clientConnection =
+  //        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+  //    assertEquals(200, clientConnection.getResponseCode());
+  //    HttpURLConnection clientConnectionSearch1 =
+  //        tryRequest("searchcsv?multi=true&queries= ");
+  //    Buffer buffer = new Buffer();
+  //    buffer.readFrom(clientConnectionSearch1.getInputStream());
+  //    Map<String, Object> response = adapter.fromJson(buffer);
+  //    assertNotNull(response.get("data"), "The response data should not be null.");
+  //    assertEquals("success", response.get("result"), "The operation should be successful.");
+  //  }
+
 }
