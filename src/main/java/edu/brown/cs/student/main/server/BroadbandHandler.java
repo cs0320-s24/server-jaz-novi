@@ -94,52 +94,6 @@ public class BroadbandHandler implements Route {
     }
   }
 
-  //  private static Map<String, Object> queryBroadbandData(
-  //      String stateCode,
-  //      String stateName,
-  //      String countyCode,
-  //      String countyName,
-  //      List<String> variableNames)
-  //      throws IOException, InterruptedException, URISyntaxException {
-  //
-  //    Map<String, Object> responseData = new HashMap<>();
-  //    List<String> notFoundVariables = new ArrayList<>();
-  //    Moshi moshi = new Moshi.Builder().build();
-  //    JsonAdapter<List<List<String>>> jsonAdapter =
-  //        moshi.adapter(Types.newParameterizedType(List.class, List.class, String.class));
-  //
-  //    for (String variable : variableNames) {
-  //      String uri =
-  //          String.format(
-  //
-  // "https://api.census.gov/data/2021/acs/acs1/subject/variables?get=NAME,%s&for=county:%s&in=state:%s",
-  //              variable, countyCode, stateCode);
-  //
-  //      HttpRequest request = HttpRequest.newBuilder().uri(new URI(uri)).GET().build();
-  //      HttpResponse<String> response =
-  //          HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
-  //
-  //      if (response.statusCode() == 200) {
-  //        List<List<String>> responseDataList = jsonAdapter.fromJson(response.body());
-  //        if (responseDataList != null && responseDataList.size() > 1) {
-  //          // Assuming the data for the variable is in the second column of the first data row
-  //          String data = responseDataList.get(1).get(1);
-  //          responseData.put(variable, data);
-  //        } else {
-  //          notFoundVariables.add(variable);
-  //        }
-  //      } else {
-  //        notFoundVariables.add(variable);
-  //      }
-  //    }
-  //
-  //    responseData.put("retrievalTime", LocalDateTime.now().toString());
-  //    responseData.put("stateName", stateName);
-  //    responseData.put("countyName", countyName);
-  //    responseData.put("notFoundVariables", notFoundVariables);
-  //
-  //    return responseData;
-  //  }
 
   private String serializeResponse(Map<String, Object> responseData) {
     try {

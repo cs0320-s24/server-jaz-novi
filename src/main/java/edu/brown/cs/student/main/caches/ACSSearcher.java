@@ -68,6 +68,6 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
     responseData.put("countyName", countyName);
     responseData.put("notFoundVariables", notFoundVariables);
 
-    return (Collection<Map<String, Object>>) responseData;
+    return List.of(responseData);
   }
 }
