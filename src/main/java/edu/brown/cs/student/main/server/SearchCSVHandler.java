@@ -61,7 +61,7 @@ public class SearchCSVHandler implements Route {
               CSVSharedVar.getHeaderFlag());
       List<String> searchResult;
       if (Boolean.parseBoolean(multiflag)) {
-        searchResult = searcher.searchMulti(searchVal);
+        searchResult = searcher.searchMulti(queries);
       } else {
         searchResult = searcher.search(searchVal, colIdentifier);
       }

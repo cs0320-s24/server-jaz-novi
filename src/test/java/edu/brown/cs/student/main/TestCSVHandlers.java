@@ -169,17 +169,17 @@ public class TestCSVHandlers {
     assertEquals("multi flag should be true or false", response.get("message"));
   }
 
-  //  @Test
-  //  public void testSearchCSVWithValidMultiFlag() throws Exception {
-  //    HttpURLConnection clientConnection =
-  //        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
-  //    assertEquals(200, clientConnection.getResponseCode());
-  //    HttpURLConnection clientConnectionSearch1 =
-  //        tryRequest("searchcsv?multi=true&queries=or(not(4_1),and(1_1)) ");
-  //    Buffer buffer = new Buffer();
-  //    buffer.readFrom(clientConnectionSearch1.getInputStream());
-  //    Map<String, Object> response = adapter.fromJson(buffer);
-  //    assertNotNull(response.get("data"), "The response data should not be null.");
-  //    assertEquals("success", response.get("result"), "The operation should be successful.");
-  //  }
+  @Test
+  public void testSearchCSVWithValidMultiFlag() throws Exception {
+    HttpURLConnection clientConnection =
+        tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+    assertEquals(200, clientConnection.getResponseCode());
+    HttpURLConnection clientConnectionSearch1 =
+        tryRequest("searchcsv?multi=true&queries=or(not(4_1),and(1_1)) ");
+    Buffer buffer = new Buffer();
+    buffer.readFrom(clientConnectionSearch1.getInputStream());
+    Map<String, Object> response = adapter.fromJson(buffer);
+    assertNotNull(response.get("data"), "The response data should not be null.");
+    assertEquals("success", response.get("result"), "The operation should be successful.");
+  }
 }

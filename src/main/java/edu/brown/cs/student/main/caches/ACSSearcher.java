@@ -27,11 +27,11 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
   @Override
   public Collection<Map<String, Object>> search(ACSQuery acsQuery)
       throws IOException, InterruptedException, URISyntaxException {
-    String stateCode = acsQuery.stateCode;
-    String stateName = acsQuery.stateName;
-    String countyCode = acsQuery.countyCode;
-    String countyName = acsQuery.countyName;
-    List<String> variableNames = acsQuery.variableNames;
+    String stateCode = acsQuery.getStateCode();
+    String stateName = acsQuery.getStateName();
+    String countyCode = acsQuery.getCountyCode();
+    String countyName = acsQuery.getCountyName();
+    List<String> variableNames = acsQuery.getVariableNames();
 
     Map<String, Object> responseData = new HashMap<>();
     List<String> notFoundVariables = new ArrayList<>();
