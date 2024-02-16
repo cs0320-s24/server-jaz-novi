@@ -6,6 +6,7 @@
  import edu.brown.cs.student.main.caches.ACSQuery;
  import edu.brown.cs.student.main.caches.ACSSearcher;
  import edu.brown.cs.student.main.caches.CachedACSInfo;
+ import edu.brown.cs.student.main.common.ServerAPI;
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.Collection;
@@ -94,7 +95,7 @@ import spark.Route;
       // Assuming we're only interested in the first result
       responseMap = searchResults.iterator().next();
     }
-    return serializeResponse(responseMap);
+    return ServerAPI.serializeResponse(responseMap);
     //    return new ParseSuccessResponse(responseMap).serialize();
   }
 
@@ -118,15 +119,4 @@ import spark.Route;
     }
   }
 
-  private String serializeResponse(Map<String, Object> responseData) {
-    try {
-      Moshi moshi = new Moshi.Builder().build();
-      JsonAdapter<Map<String, Object>> jsonAdapter =
-          moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
-      return jsonAdapter.toJson(responseData);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return "{}"; // Return an empty JSON object in case of error
-    }
-  }
  }

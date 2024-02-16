@@ -1,22 +1,21 @@
 package edu.brown.cs.student.main.common;
 
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import java.util.Map;
 
 public class ServerAPI {
 
-  public record ServerErrorResponse(String response_type, String message) {
-    public ServerErrorResponse(String response_type, String message) {
-      this.response_type = response_type;
-      this.message = message;
-    }
-
-    String serialize() {
+  public static String serializeResponse(Map<String, Object> responseData) {
+    try {
       Moshi moshi = new Moshi.Builder().build();
-      return moshi.adapter(ServerErrorResponse.class).toJson(this);
+      JsonAdapter<Map<String, Object>> jsonAdapter =
+          moshi.adapter(Types.newParameterizedType(Map.class, String.class, Object.class));
+      return jsonAdapter.toJson(responseData);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "{}"; // Return an empty JSON object in case of error
     }
-  }
-
-  public static String GetServerErrorResponse(String response_type, String message) {
-    return new ServerErrorResponse(response_type, message).serialize();
   }
 }

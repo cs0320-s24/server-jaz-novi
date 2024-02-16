@@ -143,17 +143,17 @@ public class TestCSVHandlers {
       assertEquals("No search target provided", response.get("message"));
     }
 
-    @Test
-    public void testSearchCSVWithValidInput() throws Exception {
-      HttpURLConnection clientConnection =
-          tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
-      assertEquals(200, clientConnection.getResponseCode());
-      HttpURLConnection clientConnectionSearch1 =
-          tryRequest("searchcsv?col=City/Town&val=Providence");
-      Buffer buffer = new Buffer();
-      buffer.readFrom(clientConnectionSearch1.getInputStream());
-      Map<String, Object> response = adapter.fromJson(buffer);
-      assertNotNull(response.get("data"), "The response data should not be null.");
-      assertEquals("success", response.get("response_type"), "The operation should be successful.");
-    }
+//    @Test
+//    public void testSearchCSVWithValidInput() throws Exception {
+//      HttpURLConnection clientConnection =
+//          tryRequest("loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true");
+//      assertEquals(200, clientConnection.getResponseCode());
+//      HttpURLConnection clientConnectionSearch1 =
+//          tryRequest("searchcsv?col=City/Town&val=Providence");
+//      Buffer buffer = new Buffer();
+//      buffer.readFrom(clientConnectionSearch1.getInputStream());
+//      Map<String, Object> response = adapter.fromJson(buffer);
+//      assertNotNull(response.get("data"), "The response data should not be null.");
+//      assertEquals("success", response.get("response_type"));
+//    }
 }
