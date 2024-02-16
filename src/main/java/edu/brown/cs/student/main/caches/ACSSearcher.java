@@ -49,15 +49,16 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
       HttpResponse<String> response =
           HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
 
-      if (response.statusCode() == 200) {
-        List<List<String>> responseDataList = jsonAdapter.fromJson(response.body());
-        if (responseDataList != null && responseDataList.size() > 1) {
-          // Assuming the data for the variable is in the second column of the first data row
-          String data = responseDataList.get(1).get(1);
-          responseData.put(variable, data);
-        } else {
+      if (response.statusCode() != 200) {
+          responseData.put("result", "error_datasource");
+          responseData.put("error_message", "Failed to retrieve data from the ACS API for the given location.");
           notFoundVariables.add(variable);
-        }
+      }
+      List<List<String>> responseDataList = jsonAdapter.fromJson(response.body());
+      if (responseDataList != null && responseDataList.size() > 1) {
+        // Assuming the data for the variable is in the second column of the first data row
+        String data = responseDataList.get(1).get(1);
+        responseData.put(variable, data);
       } else {
         notFoundVariables.add(variable);
       }
