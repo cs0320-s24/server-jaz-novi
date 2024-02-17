@@ -39,7 +39,18 @@ public class CachedACSInfo implements Searcher<Map<String, Object>, ACSQuery> {
   }
 
   @Override
-  public Collection<Map<String, Object>> search(ACSQuery acsQuery) {
+  public Collection<Map<String, Object>> search(ACSQuery acsQuery) throws IOException {
+    // Retrieve the result from cache, automatically loading if necessary
+    CacheStats stats = cache.stats();
+    System.out.println("Cache hit count: " + stats.hitCount());
+    System.out.println("Cache miss count: " + stats.missCount());
+    System.out.println("Cache hit rate: " + stats.hitRate());
+    System.out.println("Cache miss rate: " + stats.missRate());
+    System.out.println("Load success count: " + stats.loadSuccessCount());
+    System.out.println("Load exception count: " + stats.loadExceptionCount());
+    System.out.println("Total load time (ns): " + stats.totalLoadTime());
+    System.out.println("Average load penalty (ns): " + stats.averageLoadPenalty());
+    System.out.println("Eviction count: " + stats.evictionCount());
 
     return cache.getUnchecked(acsQuery);
   }

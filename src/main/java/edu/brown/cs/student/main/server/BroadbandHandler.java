@@ -3,11 +3,11 @@ package edu.brown.cs.student.main.server;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import edu.brown.cs.student.main.caches.ACSQuery;
-import edu.brown.cs.student.main.caches.ACSSearcher;
 import edu.brown.cs.student.main.caches.CachedACSInfo;
 import edu.brown.cs.student.main.common.GetCountyCodes;
 import edu.brown.cs.student.main.common.GetStateCodes;
 import edu.brown.cs.student.main.common.ServerAPI;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,13 +20,16 @@ import spark.Route;
 
 public class BroadbandHandler implements Route {
   private static Map<String, String> stateCodes = null;
-  private static ACSSearcher acsSearcher;
-  private static CachedACSInfo cachedACSInfo;
+  // private static ACSSearcher acsSearcher;
+  // private static CachedACSInfo cachedACSInfo;
+  // private ACSSearcher acsSearcher;
+  private CachedACSInfo cachedACSInfo;
 
-  public BroadbandHandler() {
+  public BroadbandHandler(CachedACSInfo cachedACSInfo) {
     try {
-      acsSearcher = new ACSSearcher();
-      cachedACSInfo = new CachedACSInfo(acsSearcher, 100, 60);
+      // this.acsSearcher = new ACSSearcher();
+      // cachedACSInfo = new CachedACSInfo(acsSearcher, 100, 60);
+      this.cachedACSInfo = cachedACSInfo;
       if (stateCodes == null) {
         stateCodes = GetStateCodes.getStatesCodes();
       }
@@ -38,44 +41,59 @@ public class BroadbandHandler implements Route {
 
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    Map<String, Object> responseMap = null;
+    Map<String, Object> responseMap = new HashMap<>();
+    try {
+      String stateName = request.queryParams("state");
+      if (stateName == null) {
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("error_message", "Missing 'state' parameter");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+      String countyName = request.queryParams("county");
+      if (countyName == null) {
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("error_message", "Missing 'county' parameter");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+      String stateCode = stateCodes.getOrDefault(stateName, null); // Implement this method
+      if (stateCode == null) {
+        responseMap.put("result", "error_datasource");
+        responseMap.put("error_message", "Provided state name doesn't exist");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+      String countyCode =
+          GetCountyCodes.getCountyCode(stateCode, countyName); // Implement this method
+      if (countyCode == null) {
+        responseMap.put("result", "error_datasource");
+        responseMap.put("error_message", "Provided county name doesn't exist");
+        return ServerAPI.serializeResponse(responseMap);
+      }
 
-    String stateName = request.queryParams("state");
-    if (stateName == null || stateName.trim().isEmpty()) {
-      responseMap.put("result", "error_bad_request");
-      responseMap.put("error_message", "Missing or empty 'state' parameter");
-    }
-    String countyName = request.queryParams("county");
-    if (countyName == null || countyName.trim().isEmpty()) {
-      responseMap.put("result", "error_bad_request");
-      responseMap.put("error_message", "Missing or empty 'county' parameter");
-    }
-
-    String stateCode = stateCodes.getOrDefault(stateName, null); // Implement this method
-    if (stateCode == null) {
-      responseMap.put("result", "error_datasource");
-      responseMap.put("error_message", "Provided state name doesn't exist");
-    }
-    String countyCode =
-        GetCountyCodes.getCountyCode(stateCode, countyName); // Implement this method
-    if (countyCode == null) {
-      responseMap.put("result", "error_datasource");
-      responseMap.put("error_message", "Provided county name doesn't exist");
-    }
-
-    // optional
-    String variablesParam = request.queryParams("variables");
-    List<String> variableNames = new ArrayList<>();
-    if (variablesParam != null && !variablesParam.isEmpty()) {
-      variableNames = Arrays.asList(variablesParam.split(","));
-    }
-    ACSQuery acsQuery = new ACSQuery(stateCode, stateName, countyCode, countyName, variableNames);
-    Collection<Map<String, Object>> searchResults = cachedACSInfo.search(acsQuery);
-    if (!searchResults.isEmpty()) {
-      // Assuming we're only interested in the first result
+      // optional
+      String variablesParam = request.queryParams("variables");
+      if (variablesParam == null) {
+        responseMap.put("result", "error_bad_request");
+        responseMap.put("error_message", "Missing 'variables' parameter");
+        return ServerAPI.serializeResponse(responseMap);
+      }
+      List<String> variableNames = new ArrayList<>();
+      if (!variablesParam.isEmpty()) {
+        variableNames = Arrays.asList(variablesParam.split(","));
+      }
+      ACSQuery acsQuery = new ACSQuery(stateCode, stateName, countyCode, countyName, variableNames);
+      Collection<Map<String, Object>> searchResults = cachedACSInfo.search(acsQuery);
       responseMap = searchResults.iterator().next();
+    } catch (IOException e) {
+      // Handling IOException specifically
+      responseMap.clear();
+      responseMap.put("result", "error_datasource");
+      responseMap.put("error_message", "Failed to retrieve data from ACS API: " + e.getMessage());
+    } catch (Exception e) {
+      // Handling other exceptions generically
+      responseMap.clear();
+      responseMap.put("result", "error_internal");
+      responseMap.put("error_message", "An internal error occurred: " + e.getMessage());
     }
-
     return ServerAPI.serializeResponse(responseMap);
   }
 

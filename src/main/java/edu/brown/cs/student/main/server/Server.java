@@ -2,6 +2,8 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
+import edu.brown.cs.student.main.caches.ACSSearcher;
+import edu.brown.cs.student.main.caches.CachedACSInfo;
 import edu.brown.cs.student.main.common.CSVSharedVar;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,11 +24,19 @@ public class Server {
           response.header("Access-Control-Allow-Methods", "*");
         });
     CSVSharedVar csvSharedVar = new CSVSharedVar();
+
     // Setting up the handler for the GET /order and /activity endpoints
     Spark.get("loadcsv", new LoadCSVHandler(csvSharedVar));
     Spark.get("viewcsv", new ViewCSVHandler(csvSharedVar));
     Spark.get("searchcsv", new SearchCSVHandler(csvSharedVar));
-    Spark.get("broadband", new BroadbandHandler());
+
+    // Instantiate dependencies for BroadbandHandler
+    ACSSearcher acsSearcher =
+        new ACSSearcher(); // Assuming default constructor, adjust as necessary
+    CachedACSInfo cachedACSInfo =
+        new CachedACSInfo(acsSearcher, 100, 60); // Adjust parameters as necessary
+    // Spark.get("broadband", new BroadbandHandler());
+    Spark.get("broadband", new BroadbandHandler(cachedACSInfo));
     Spark.init();
     Spark.awaitInitialization();
 

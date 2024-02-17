@@ -27,6 +27,7 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
   @Override
   public Collection<Map<String, Object>> search(ACSQuery acsQuery)
       throws IOException, InterruptedException, URISyntaxException {
+
     String stateCode = acsQuery.getStateCode();
     String stateName = acsQuery.getStateName();
     String countyCode = acsQuery.getCountyCode();
@@ -54,6 +55,7 @@ public class ACSSearcher implements Searcher<Map<String, Object>, ACSQuery> {
         responseData.put(
             "error_message", "Failed to retrieve data from the ACS API for the given location.");
         notFoundVariables.add(variable);
+        return List.of(responseData);
       }
       List<List<String>> responseDataList = jsonAdapter.fromJson(response.body());
       if (responseDataList != null && responseDataList.size() > 1) {

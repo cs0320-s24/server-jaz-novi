@@ -6,6 +6,7 @@ import com.google.common.cache.CacheStats;
 import edu.brown.cs.student.main.caches.ACSQuery;
 import edu.brown.cs.student.main.caches.ACSSearcher;
 import edu.brown.cs.student.main.caches.CachedACSInfo;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test;
 public class TestCache {
 
   @Test
-  public void testCache() {
+  public void testCache() throws IOException {
     // Test that the cache is working
     // Load the CSV file
     String stateCode = "44";
@@ -41,7 +42,7 @@ public class TestCache {
   }
 
   @Test
-  public void testCacheEviction() {
+  public void testCacheEviction() throws IOException {
     String stateCode = "44";
     String stateName = "Rhode Island";
     String countyCode = "007";
