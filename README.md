@@ -18,13 +18,30 @@ TestCSVHandlers suite checks if each csv handler handles error input and valid i
 # How to
 ## loadcsv, which loads a CSV file if one is located at the specified path. 
 Requires a filepath parameter and an optional headerFlag parameter:
-http://localhost:3232/loadcsv?filepath=./data/stardata.csv
+http://localhost:3232/loadcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true
 
 ## viewcsv, which sends back the entire CSV file's contents as a Json 2-dimensional array.
-Requires to load csv first
+http://localhost:3232/viewcsv?filepath=data/server-data/city-town-income.csv&headerFlag=true
 
 ## searchcsv, which sends back rows matching the given search criteria.
 Requires val(targeted search value),optional col (potential search collum) if the multiFlag Provided is false
 Requires queries formatted as `Or(and(val_col),and(val1_col1))`
+
+http://localhost:3232/searchcsv?col=City/Town&val=Providence
+
 ## broadband, which sends back the broadband data from the ACS described above.
 Requires statename and county names and at least one variablename in the parameter called variablenames
+
+http://localhost:3232/broadband?county=Providence%20County&state=Rhode%20Island&variables=SUMLEVEL
+
+## Error Handling
+- error_bad_request (missing county)
+http://localhost:3232/broadband?state=Rhode%20Island
+
+- error_datasource
+1. The requested variable doesn't exist
+http://localhost:3232/broadband?county=Providence%20County&state=Rhode%20Island&variables=DP02_0126E
+
+2. The file to be loaded doesn't exist
+http://localhost:3232/loadcsv?filepath=data/server-data/city.csv&headerFlag=true
+
